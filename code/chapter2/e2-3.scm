@@ -54,6 +54,20 @@
 
 
 ; 2.59
+(define (element-of-set? x set)
+	(cond ((null? set) false)
+		  ((equal? x (car set)) true)
+		  (else (element-of-set? x (cdr set)))))
+(define (adjoin-set x set)
+	(if (element-of-set? x set)
+		set
+		(cons x set)))
+(define (intersection-set set1 set2)
+	(cond ((or (null? set1) (null? set2)) '())
+		  ((element-of-set? (car set1) set2)
+		  		(cons (car set1) 
+		  			  (intersection-set (cdr set1) set2)))
+		  (else (intersection-set (cdr set1) set2))))
 (define (union-set set1 set2)
 	(cond ((null? set1) set2)
 		  ((element-of-set? (car set1) set2)
@@ -61,7 +75,9 @@
 		  (else (cons (car set1)
 		  			  (union-set (cdr set1) set2)))))
 
-(union-set '() '(1 2 3))
+(cons (car '(1)) (union-set (cdr '(1)) '(3 4 5 6)))
+(union-set '() '(3 4 5 6))
+(union-set '(1) '(3 4 5 6))
 (union-set '(1 2 3) '(3 4 5 6))
 ; 2.60
 
@@ -75,6 +91,22 @@
 (adjoin-set 0 (list 1 2 3 7))
 
 ; 2.62
+(define (element-of-set? x set)
+	(cond ((null? set) false)
+		  ((= x (car set)) true)
+		  ((< x (car set)) false)
+		  (else (element-of-set? x (cdr set)))))
+
+(define (intersection-set set1 set2)
+	(if (or (null? set1) (null? set2)) 
+		'()
+		(let ((x1 (car set1)) (x2 (car set2)))
+			 (cond ((= x1 x2)
+			 		(cons x1 (intersection-set (cdr set1) (cdr set2))))
+			 	   ((> x1 x2)
+			 	   	(intersection-set set1 (cdr set2)))
+			 	   ((< x1 x2)
+			 	   	(intersection-set (cdr set1) set2))))))
 (define (union-set set1 set2)
 	(cond ((null? set1) set2)
 		  ((null? set2) set1)
@@ -118,7 +150,26 @@
 	(caddr tree))
 (define (make-tree entry left right)
 	(list entry left right))
-	
+(define (element-of-set? x set)
+	(cond ((null? set) false)
+		  ((= x (entry set) true))
+		  ((< x (entry set) (element-of-set? x (left-branch set))))
+		  ((> x (entry set) (element-of-set? x (right-branch set))))))
+
+(define (adjoin-set x set)
+	(cond ((null? set) (make-tree x () ()))
+		  ((= x (entry set)) set)
+		  ((< x (entry set)) 
+		  	(make-tree
+		  		(entry set)
+		  		(adjoin-set x (left-branch set))
+		  		(right-branch set)))
+		  ((> x (entry set))
+		  	(make-tree
+		  		(entry set)
+		  		(right-branch set)
+		  		(adjoin-set x (right-branch set))))))
+
 (define (list2tree elements)
 	(car (partial-tree elements (length elements))))
 
@@ -140,13 +191,22 @@
 
 (list2tree '(1 3 5 7 9 11))
 
+; 2.65
+
+(define (intersection-tree tree1 tree2)
+	(list2tree
+		(intersection-set
+			(tree2list-2 tree1)
+			(tree2list-2 tree2))))
+
+(define (union-tree tree1 tree2)
+	(list2tree
+		(union-set
+			(tree2list-2 tree1)
+			(tree2list-2 tree2))))
 
 
-
-
-
-
-
+: 2.66
 
 
 
