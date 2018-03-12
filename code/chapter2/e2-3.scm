@@ -206,9 +206,12 @@
 			(tree2list-2 tree2))))
 
 
-: 2.66
-
-
+; 2.66
+(define (lookup key set)
+	(cond ((null? set) false)
+		  ((= key (entry set)) true)
+		  ((< key (entry set)) (lookup key (left-branch set)))
+		  (else (lookup key (right-branch set)))))
 
 
 
