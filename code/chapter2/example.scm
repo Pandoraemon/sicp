@@ -427,9 +427,8 @@
 			(let ((next-branch
 				  (choose-branch (car bits) current-branch)))
 				(if (leaf? next-branch)
-					(cons 
-						(symbol-leaf next-branch)
-						(decode-1 (cdr bits) tree))
+					(cons (symbol-leaf next-branch)
+						  (decode-1 (cdr bits) tree))
 					(decode-1 (cdr bits) next-branch)))))
 	(decode-1 bits tree))
 
@@ -451,6 +450,149 @@
 			(adjoin-set (make-leaf (car pair)
 								   (cadr pair))
 			(make-leaf-set (cdr pairs))))))
+
+
+
+; 2.4 抽象数据的多重表示
+
+; 复数的定义-直角坐标表示
+(define (real-part z) (car z))
+(define (imag-part z) (cdr z))
+(define (magnitude z)
+	(sqrt (+ (square (real-part z)) (square (imag-part z)))))
+(define (angle z)
+	(atan (imag-part z) (real-part z)))
+(define (make-from-real-imag x y)
+	(cons x y))
+(define (make-from-mag-ang r a)
+	(cons (* r (cos a)) (* r (sin a))))
+
+;复数的定义-极坐标表示
+(define (real-part z) 
+	(* (magnitude z) (cos (angle z))))
+(define (imag-part z) 
+	(* (magnitude z) (sin (angle z))))
+(define (magnitude z)
+	(car z))
+(define (angle z)
+	(cdr z))
+(define (make-from-real-imag x y)
+	(cons (sqrt (+ (square x) (square y)
+		  (atan y x)))))
+(define (make-from-mag-ang r a)
+	(cons r a))
+
+
+; 复数的运算
+
+(define (add-complex z1 z2)
+	(make-from-real-imag (+ (real-part z1) (real-part z2))
+						 (+ (imag-part z1) (imag-part z2))))
+(define (sub-complex z1 z2)
+	(make-from-real-imag (- (real-part z1) (real-part z2))
+						 (- (imag-part z1) (imag-part z2))))
+
+(define (mul-complex z1 z2)
+	(make-from-mag-ang (* (magnitude z1) (magnitude z2))
+					   (+ (angle z1) (angle z2))))
+(define (div-complex z1 z2)
+	(make-from-mag-ang (/ (magnitude z1) (magnitude z2))
+					   (- (angle z1) (angle z2))))
+
+; 带标志数据
+(define (attach-tag type-tag contents)
+	(cons type-tag contents))
+(define (type-tag datum)
+	(if (pairs? datum)
+		(car datum)
+		(error "bad tagged datum")))
+(define (contents datum)
+	(if (pairs? datum)
+		(cdr datum)
+		(error "bad tagged datum")))
+(define (rectangular? z)
+	(eq? (type-tag z) 'rectangular))
+(define (polar? z)
+	(eq? (type-tag z) 'polar))
+
+
+; 复数的定义-直角坐标表示
+(define (real-part-rectangular z) (car z))
+(define (imag-part-rectangular z) (cdr z))
+(define (magnitude-rectangular z)
+	(sqrt (+ (square (real-part-rectangular z)) (square (imag-part-rectangular z)))))
+(define (angle-rectangular z)
+	(atan (imag-part-rectangular z) (real-part-rectangular z)))
+(define (make-from-real-imag-rectangular x y)
+	(attach-tag 'rectangular (cons x y)))
+(define (make-from-mag-ang-rectangular r a)
+	(attach-tag 'rectangular (cons (* r (cos a)) (* r (sin a)))))
+
+;复数的定义-极坐标表示
+(define (real-part-polar z) 
+	(* (magnitude-polar z) (cos (angle-polar z))))
+(define (imag-part-polar z) 
+	(* (magnitude-polar z) (sin (angle-polar z))))
+(define (magnitude-polar z)
+	(car z))
+(define (angle-polar z)
+	(cdr z))
+(define (make-from-real-imag-polar x y)
+	(attach-tag 'polar (cons (sqrt (+ (square x) (square y)
+		  (atan y x))))))
+(define (make-from-mag-ang-polar r a)
+	(attach-tag 'polar (cons r a)))
+
+; 通用型的选择函数
+(define (real-part z)
+	(cond ((rectangular? z)
+			(real-part-rectangular '(contents z)))
+		  ((polar? z)
+		  	(real-part-polar '(contentsco z)))
+		  (else (error "unknown type"))))
+
+(define (imag-part z)
+	(cond ((rectangular? z)
+			(imag-part-rectangular '(contents z)))
+		  ((polar? z)
+		  	(imag-part-polar '(contentsco z)))
+		  (else (error "unknown type"))))
+
+(define (magnitude z)
+	(cond ((rectangular? z)
+			(magnitude-rectangular '(contents z)))
+		  ((polar? z)
+		  	(magnitude-polar '(contentsco z)))
+		  (else (error "unknown type"))))
+
+(define (angle z)
+	(cond ((rectangular? z)
+			(angle-rectangular '(contents z)))
+		  ((polar? z)
+		  	(angle-polar '(contentsco z)))
+		  (else (error "unknown type"))))
+
+
+(define (make-from-real-imag x y)
+	(make-from-real-imag-rectangular x y))
+(define (make-from-mag-ang r a)
+	(make-from-mag-ang-polar r a))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
