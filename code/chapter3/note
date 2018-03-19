@@ -47,3 +47,6 @@ delay 和 force 的实现
 
 (delay <exp>) 等价于 (memo-proc (lambda () <exp>))
 
+
+3.5.2 无穷流
+
