@@ -26,4 +26,24 @@
 如寻找100000到100000000之前第二个素数的例子,根本不需要把整个表先生成,找到第二个素数就可停止了.
 
 流的实现
-stream
+
+stream.scm
+于之前有理数实现的后一个例子一样,steam-cdr 在构造的时候并不实现求值,而是在选取的时候再进行,这里基于 delay 实现.
+delay 返回一个延时对象,force 求值延时对象
+
+delay 和 force 的实现
+(delay <exp>) 实际就是 (lambda () <exp>) 的一层语法糖. force 就是对这一过程的调用
+(define (force delayed-object)
+    (delayed-object))
+实际使用中会遇到多次对用一个delay 对象求值的情况,可以在第一次求值后将结果保存起来
+(define (memo-proc proc)
+	(let ((already-run? false) (result false))
+		(lambda ()
+			(if (not already-run?)
+				(begin (set! result (proc))
+						(set! already-run? true)
+						result)
+				result))))
+
+(delay <exp>) 等价于 (memo-proc (lambda () <exp>))
+
