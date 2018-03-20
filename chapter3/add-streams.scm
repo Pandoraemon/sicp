@@ -1,3 +1,4 @@
+(load "stream.scm")
 (load "3-50.scm")
 (load "ones.scm")
 (define (add-streams s1 s2)
