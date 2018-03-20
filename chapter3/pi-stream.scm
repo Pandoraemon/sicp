@@ -8,5 +8,3 @@
 	(scale-stream
 		(partial-sums (pi-summands 1))
 		4))
-
-(stream-head pi-stream 10)
