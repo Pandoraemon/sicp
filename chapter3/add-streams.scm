@@ -6,7 +6,7 @@
 
 (define integers (cons-stream
 					1
-					(add-streams + ones integers)))
+					(add-streams ones integers)))
 
 (define fibs
 	(cons-stream 0
