@@ -9,4 +9,3 @@
 
 (define primes (sieve (integers-starting-from 2)))
 (stream-ref primes 50)
-(display-stream primes)
