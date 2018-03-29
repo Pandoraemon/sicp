@@ -1,3 +1,4 @@
+
 ; eval
 (define (eval exp env)
 	(cond ((self-evaluating? exp) exp)
@@ -42,9 +43,9 @@
 
 ; 条件
 (define (eval-if exp env)
-	(if (true? (eval (if-predicate exp) env)
+	(if (true? (eval (if-predicate exp) env))
 		(eval (if-consequent exp) env)
-		(eval (if-alternative exp) env))))
+		(eval (if-alternative exp) env)))
 
 ; 序列
 (define (eval-sequence exps env)
@@ -65,28 +66,4 @@
 					  (eval (definition-value exp) env)
 					  env)
 	'ok)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
